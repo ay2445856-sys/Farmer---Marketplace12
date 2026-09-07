@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FarmDirect - Smart India Hackathon AgriTech Platform</title>
+  
+  <!-- Google Fonts: Plus Jakarta Sans & Noto Sans Devanagari -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet.js OpenStreetMap CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌾</text></svg>">
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ========================================== -->
+  <!-- 1. LIVE APMC MANDI TICKER                  -->
+  <!-- ========================================== -->
+  <div class="top-ticker">
+    <div style="font-weight: 800; display: flex; align-items: center; gap: 6px; z-index: 2; background: #0D331B; padding-right: 14px;">
+      <span>🔴 LIVE APMC MANDI:</span>
+    </div>
+    <div class="ticker-content">
+      <div class="ticker-item">🧅 <strong>भदोही/नाशिक लाल प्याज:</strong> ₹25/kg <span class="up">▲ +18% (HIGH)</span></div>
+      <div class="ticker-item">🥔 <strong>प्रयागराज ज्योति आलू:</strong> ₹22/kg <span class="up">→ Stable</span></div>
+      <div class="ticker-item">🍅 <strong>वाराणसी देसी टमाटर:</strong> ₹18/kg <span class="up">▲ +12%</span></div>
+      <div class="ticker-item">🌾 <strong>मिर्जापुर शरबती गेहूं:</strong> ₹28/kg <span class="up">▲ +4%</span></div>
+      <div class="ticker-item">🚚 <strong>AI ग्रीन रूट बचत:</strong> ₹24,500 (86 सक्रिय डिलीवरी)</div>
+      <div class="ticker-item">🛡️ <strong>एस्क्रो सुरक्षा:</strong> 100% सत्यापित बैंक भुगतान</div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 2. NAVBAR                                  -->
+  <!-- ========================================== -->
+  <header class="navbar">
+    <a href="#" class="brand-container" onclick="switchViewMode('prototype'); switchProtoScreen(1);">
+      <div class="brand-logo">🌾</div>
+      <div class="brand-text">
+        <h1>Farm<span>Direct</span> <span class="brand-badge">SIH 2024-26</span></h1>
+      </div>
+    </a>
+
+    <!-- Role Switcher Pills -->
+    <div class="header-actions">
+      <!-- Session Container (Updated dynamically by updateAuthUI) -->
+      <div id="authSessionContainer">
+        <div style="padding: 4px 10px; background: #FEF3C7; color: #92400E; border: 1.5px solid #F59E0B; border-radius: 20px; font-size: 0.75rem; font-weight: 800; display: flex; align-items: center; gap: 6px;">
+          🔒 लॉगिन आवश्यक (Please Login)
+        </div>
+      </div>
+
+      <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-left: 4px;">भूमिका:</span>
+      <button class="role-pill active" data-role="farmer" onclick="switchRole('farmer')">👨‍🌾 किसान</button>
+      <button class="role-pill" data-role="buyer" onclick="switchRole('buyer')">🏪 खरीदार</button>
+      <button class="role-pill" data-role="admin" onclick="switchRole('admin')">👨‍💼 एडमिन</button>
+      
+      <button id="langToggleBtn" class="lang-btn" onclick="toggleLanguage()">
+        🇮🇳 English
+      </button>
+    </div>
+  </header>
+
+  <!-- ========================================== -->
+  <!-- 3. TOP VIEW MODE SWITCHER BAR              -->
+  <!-- ========================================== -->
+  <div class="view-mode-bar">
+    <div style="font-size: 0.85rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+      <span>💡 SIH व्यूअर मोड:</span>
+    </div>
+    <div class="view-mode-tabs">
+      <button class="mode-tab-btn active" data-mode="prototype" onclick="switchViewMode('prototype')">
+        📱 1. SIH प्रोटोटाइप (First 5 Screens)
+      </button>
+      <button class="mode-tab-btn" data-mode="workflow" onclick="switchViewMode('workflow')">
+        🚀 2. मेन वर्कफ़्लो सिमुलेटर (8 Steps)
+      </button>
+      <button class="mode-tab-btn" data-mode="portal" onclick="switchViewMode('portal')">
+        🌐 3. संपूर्ण डिजिटल पोर्टल (Full Hub)
+      </button>
+    </div>
+  </div>
+
+  <!-- =================================================================== -->
+  <!-- VIEW 1: 📱 SIH PROTOTYPE - FIRST 5 SCREENS (Exact Prompt Section 6) -->
+  <!-- =================================================================== -->
+  <section id="view-prototype" class="main-view-section active">
+    
+    <!-- 5 Screen Sub-Navigator -->
+    <div class="prototype-nav">
+      <button class="proto-step-btn active" data-screen="1" onclick="switchProtoScreen(1)">
+        1️⃣ Login / Register
+      </button>
+      <button class="proto-step-btn" data-screen="2" onclick="switchProtoScreen(2)" style="opacity: 0.65;">
+        🔒 2️⃣ Farmer Dashboard
+      </button>
+      <button class="proto-step-btn" data-screen="3" onclick="switchProtoScreen(3)" style="opacity: 0.65;">
+        🔒 3️⃣ Crop Marketplace
+      </button>
+      <button class="proto-step-btn" data-screen="4" onclick="switchProtoScreen(4)" style="opacity: 0.65;">
+        🔒 4️⃣ Order & Payment
+      </button>
+      <button class="proto-step-btn" data-screen="5" onclick="switchProtoScreen(5)" style="opacity: 0.65;">
+        🔒 5️⃣ Admin / AI Dashboard
+      </button>
+    </div>
+
+    <main class="container">
+
+      <!-- ======================================== -->
+      <!-- 1️⃣ SCREEN 1: LOGIN / REGISTER            -->
+      <!-- ======================================== -->
+      <div id="proto-screen-1" class="proto-screen active">
+        <div style="max-width: 540px; margin: 20px auto;">
+          <div class="card" style="border-top: 4px solid var(--primary); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);">
+            <div style="text-align: center; margin-bottom: 18px;">
+              <div style="font-size: 2.2rem; margin-bottom: 4px;">🌾</div>
+              <h2 style="font-size: 1.4rem; color: var(--primary); font-weight: 800; margin-bottom: 4px;">1️⃣ Login / Register (सुरक्षित मोबाइल OTP प्रवेश)</h2>
+              <p style="color: var(--text-muted); font-size: 0.85rem;">स्मार्ट डिजिटल कृषि प्लेटफॉर्म - किसान, खरीदार व एडमिन लॉगिन</p>
+            </div>
+
+            <!-- Mandatory OTP Security Policy Alert Banner -->
+            <div style="padding: 12px 14px; background: #FEF3C7; border: 1.5px solid #F59E0B; border-radius: 8px; margin-bottom: 16px; font-size: 0.82rem; color: #92400E; display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 1.4rem;">🔒</span>
+              <span><strong>सुरक्षा नीति:</strong> किसान (Farmer), खरीदार (Buyer) एवं एडमिन (Admin) - तीनों भूमिकाएं केवल <strong>मोबाइल OTP सत्यापन</strong> के बाद ही खुलेंगी!</span>
+            </div>
+
+            <!-- Role Selection -->
+            <div class="form-group">
+              <label class="form-label" style="font-weight: 700;">अपनी भूमिका चुनें (Select Role to Login):</label>
+              <div style="display: flex; gap: 8px;">
+                <button type="button" class="btn btn-primary login-role-btn active" data-role="farmer" style="flex:1; font-weight: 700;" onclick="selectLoginRole('farmer')">👨‍🌾 किसान</button>
+                <button type="button" class="btn btn-outline login-role-btn" data-role="buyer" style="flex:1; font-weight: 700;" onclick="selectLoginRole('buyer')">🏪 खरीदार</button>
+                <button type="button" class="btn btn-outline login-role-btn" data-role="admin" style="flex:1; font-weight: 700;" onclick="selectLoginRole('admin')">👨‍💼 एडमिन</button>
+              </div>
+            </div>
+
+            <!-- Mobile Number Input with Send OTP Button -->
+            <div class="form-group">
+              <label class="form-label" style="font-weight: 700;">मोबाइल नंबर (Mobile Number):</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="text" class="form-input" style="max-width: 65px; text-align: center; font-weight: 700;" value="+91" readonly>
+                <input type="tel" id="protoLoginPhone" class="form-input" value="9823012345" placeholder="10-अंकों का मोबाइल नंबर" style="flex:1;">
+                <button type="button" class="btn btn-secondary" onclick="sendLoginOtp()" style="white-space: nowrap; padding: 8px 14px; font-size: 0.85rem; font-weight: 700;">
+                  📩 OTP भेजें
+                </button>
+              </div>
+            </div>
+
+            <!-- OTP Sent Notification Banner -->
+            <div id="otpSentBanner" style="display: none; padding: 10px 14px; background: #ECFDF5; border: 1.5px solid #10B981; border-radius: 8px; margin-bottom: 16px; font-size: 0.82rem; color: #065F46;">
+              📲 <strong>OTP भेजा गया:</strong> मोबाइल पर 4-अंकीय कोड <strong>1234</strong> भेजा गया है।
+            </div>
+
+            <!-- OTP Input with 1-Click Demo Fill -->
+            <div class="form-group">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <label class="form-label" style="margin-bottom:0; font-weight: 700;">OTP सत्यापन (OTP Verification):</label>
+                <button type="button" class="btn btn-outline btn-sm" style="font-size: 0.75rem; padding: 2px 8px; border-color: var(--primary); color: var(--primary); font-weight: 700;" onclick="fillDemoOtp()">
+                  ⚡ कोड '1234' भरें (Autofill)
+                </button>
+              </div>
+              <input type="text" id="protoLoginOtp" class="form-input" placeholder="4-अंकीय OTP दर्ज करें (उदा. 1234)" maxlength="6" style="letter-spacing: 4px; font-size: 1.1rem; font-weight: 700;" disabled>
+              <small style="color: var(--text-muted); font-size: 0.76rem; display: block; margin-top: 4px;">* पहले 'OTP भेजें' बटन दबाएं, फिर 1234 दर्ज करें।</small>
+            </div>
+
+            <!-- Basic Profile Setup -->
+            <div class="form-group">
+              <label class="form-label">नाम (Full Name):</label>
+              <input type="text" id="protoLoginName" class="form-input" value="रामेश्वर पाटिल (Farmer)">
+            </div>
+
+            <!-- Location Details & Permission -->
+            <div class="form-group">
+              <label class="form-label">खेत / मंडी का पता (Farm / Location Details):</label>
+              <input type="text" id="protoLoginLocation" class="form-input" value="भदोही (Bhadohi), उत्तर प्रदेश">
+            </div>
+
+            <div style="padding: 10px 14px; background: #EBF7EE; border-radius: 8px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
+              <span style="font-size: 0.82rem; font-weight: 700; color: #166534;">📍 जीपीएस लोकेशन अनुमति (Location Permission):</span>
+              <span class="badge" style="background:#16A34A; color:white; padding:3px 8px; border-radius:12px; font-size:0.72rem; font-weight:700;">सक्रिय (Granted)</span>
+            </div>
+
+            <!-- Main Verify & Unlock Button -->
+            <button id="verifyLoginBtn" type="button" class="btn btn-primary" style="width: 100%; font-size: 1.05rem; padding: 12px; font-weight: 800;" onclick="verifyLoginOtp()">
+              🔐 सत्यापित करें व किसान डैशबोर्ड खोलें ➔
+            </button>
+
+            <!-- 1-Click Fast Presets for Evaluator Testing -->
+            <div style="margin-top: 18px; padding: 12px; background: #F8FAFC; border-radius: 10px; border: 1px dashed #CBD5E1; font-size: 0.8rem;">
+              <div style="font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">💡 SIH मूल्यांकनकर्ता के लिए 1-क्लिक त्वरित टेस्ट:</div>
+              <div style="display: flex; gap: 6px;">
+                <button type="button" class="btn btn-outline btn-sm" style="flex:1; font-size:0.74rem;" onclick="selectLoginRole('farmer'); fillDemoOtp(); verifyLoginOtp();">🌾 1-क्लिक किसान</button>
+                <button type="button" class="btn btn-outline btn-sm" style="flex:1; font-size:0.74rem;" onclick="selectLoginRole('buyer'); fillDemoOtp(); verifyLoginOtp();">🏪 1-क्लिक खरीदार</button>
+                <button type="button" class="btn btn-outline btn-sm" style="flex:1; font-size:0.74rem;" onclick="selectLoginRole('admin'); fillDemoOtp(); verifyLoginOtp();">👨‍💼 1-क्लिक एडमिन</button>
+              </div>
+              <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px; text-align: center;">
+                * प्रत्येक भूमिका OTP सत्यापन के उपरांत ही अपने संबंधित डैशबोर्ड को खोलेगी।
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================================== -->
+      <!-- 2️⃣ SCREEN 2: FARMER DASHBOARD           -->
+      <!-- ======================================== -->
+      <div id="proto-screen-2" class="proto-screen">
+        <!-- AI Alert Banner -->
+        <div class="ai-alert-card">
+          <div class="ai-alert-icon">💡</div>
+          <div class="ai-alert-body">
+            <h4>AI मांग पूर्वानुमान अलर्ट (AI Demand Surge Alert)</h4>
+            <p>
+              “पिछले ऑर्डर्स, स्थानीय मांग व मौसम के आधार पर:
+              <strong>अगले 7 दिनों में इस क्षेत्र में प्याज (Onion) की मांग 18% तक बढ़ सकती है।</strong>
+              अनुमानित थोक भाव ₹28–30/kg रहने की संभावना है। किसानों को न्यूनतम ₹25/kg से कम में न बेचने की सलाह है।”
+            </p>
+          </div>
+        </div>
+
+        <!-- Welcome Banner & Add Crop Button -->
+        <div class="card" style="background: linear-gradient(135deg, #1E6F3D 0%, #16562F 100%); color: white;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+            <div>
+              <h2 style="font-size: 1.5rem; font-weight: 800;">Welcome, Farmer 👨🌾 (स्वागत है, किसान)</h2>
+              <p style="color: #DCFCE7; font-size: 0.88rem; margin-top: 4px;">
+                रामेश्वर पाटिल | 📍 भदोही (Bhadohi) फार्म गेट | 📱 +91 98230 12345
+              </p>
+            </div>
+            <button class="btn btn-secondary btn-lg" onclick="openModal('addCropModal')">
+              ➕ [ + Add Crop ] नई फसल जोड़ें
+            </button>
+          </div>
+        </div>
+
+        <!-- Financial & Order Summary Stats (Exact numbers from prompt) -->
+        <div class="grid-4" style="margin-bottom: 20px;">
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap kpi-icon-green">📦</div>
+            <div>
+              <div class="kpi-num" id="farmerOrdersCount">12</div>
+              <div class="kpi-title">कुल ऑर्डर्स (Orders)</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap kpi-icon-orange">⏳</div>
+            <div>
+              <div class="kpi-num" id="farmerPendingOrders">3</div>
+              <div class="kpi-title">लंबित ऑर्डर्स (Pending)</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap kpi-icon-blue">✅</div>
+            <div>
+              <div class="kpi-num" id="farmerCompletedOrders">9</div>
+              <div class="kpi-title">सफल डिलीवरी (Completed)</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap kpi-icon-purple">💰</div>
+            <div>
+              <div class="kpi-num" id="farmerPaymentAmount">₹18,500</div>
+              <div class="kpi-title">प्राप्त भुगतान (Payment)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- My Listings Section (Exact matching prompt: Potato 500kg ₹22/kg) -->
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">📋 My Listings (आपकी लिस्ट की गई फसलें)</h3>
+              <button class="btn btn-primary btn-sm" onclick="openModal('addCropModal')">+ Add Crop</button>
+            </div>
+            
+            <div id="protoFarmerListingsContainer">
+              <!-- Rendered by app.js -->
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">📦 प्राप्त ऑर्डर्स व भुगतान स्थिति (Received Orders)</h3>
+              <button class="btn btn-outline btn-sm" onclick="switchProtoScreen(4)">विवरण ➔</button>
+            </div>
+
+            <!-- Active Order #FD-8924 summary card -->
+            <div style="padding: 14px; border: 1.5px solid var(--primary-border); border-radius: 12px; background: var(--primary-light); margin-bottom: 12px;">
+              <div style="display: flex; justify-content: space-between;">
+                <strong>ऑर्डर #FD-8924</strong>
+                <span class="badge" style="background:#FEF3C7; color:#92400E; padding:2px 8px; border-radius:6px; font-weight:700; font-size:0.75rem;">
+                  🚚 Transport Assigned
+                </span>
+              </div>
+              <div style="font-size: 0.85rem; margin-top: 6px;">
+                फसल: <strong>प्याज (Onion)</strong> | मात्रा: <strong>200 kg</strong> @ ₹25/kg
+              </div>
+              <div style="font-size: 0.85rem; margin-top: 2px;">
+                खरीदार: <strong>सुनील किराना मार्ट (प्रयागराज)</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.08);">
+                <span style="font-size: 0.9rem; font-weight: 800; color: var(--primary);">एस्क्रो सुरक्षित राशि: ₹5,000</span>
+                <button class="btn btn-primary btn-sm" onclick="switchProtoScreen(4)">ट्रैकिंग देखें ➔</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================================== -->
+      <!-- 3️⃣ SCREEN 3: CROP MARKETPLACE            -->
+      <!-- ======================================== -->
+      <div id="proto-screen-3" class="proto-screen">
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 16px;">
+            <div>
+              <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--primary);">
+                🌾 Digital Crop Marketplace (डिजिटल फसल मंडी)
+              </h2>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">
+                सीधा किसान खेत से थोक खरीद - बिचौलिया मुक्त एवं पारदर्शी मूल्य
+              </p>
+            </div>
+
+            <!-- Search input -->
+            <div style="min-width: 280px; flex: 1; max-width: 400px;">
+              <input type="text" class="form-input" placeholder="🔍 Search: [ Search Crop ] (जैसे: Onion, Potato)..." oninput="handleSearchInput(event)">
+            </div>
+          </div>
+
+          <!-- Filters Bar -->
+          <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border-color);">
+            <!-- Distance Slider -->
+            <div style="display: flex; align-items: center; gap: 10px; background: var(--bg-main); padding: 6px 14px; border-radius: 10px;">
+              <span style="font-size: 0.82rem; font-weight: 700;">📍 Distance (दूरी):</span>
+              <input id="protoRadiusSlider" type="range" min="10" max="100" value="50" oninput="updateRadiusFilter(this.value)">
+              <span id="radiusFilterLabel" style="font-weight: 800; font-size: 0.82rem; color: var(--primary);">50 km के अंदर</span>
+            </div>
+
+            <!-- Category Filter Chips -->
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <button class="filter-chip active" data-category="all" onclick="setCategoryFilter('all')">All</button>
+              <button class="filter-chip" data-category="vegetables" onclick="setCategoryFilter('vegetables')">🧅 Vegetables</button>
+              <button class="filter-chip" data-category="grains" onclick="setCategoryFilter('grains')">🌾 Grains</button>
+              <button class="filter-chip" onclick="showNotification('FPO सत्यापित फिल्टर सक्रिय', 'info')">🏢 Farmer / FPO</button>
+              <button class="filter-chip" onclick="showNotification('100% जैविक उत्पाद फिल्टर सक्रिय', 'info')">🌿 Organic</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 12px; font-weight: 800; font-size: 1.1rem;">
+          📍 Nearby Crops (पास की उपलब्ध फसलें):
+        </div>
+
+        <!-- Marketplace Cards Grid (Exact matching prompt: Onion 500kg Bhadohi, Potato 300kg Prayagraj) -->
+        <div id="protoMarketplaceGrid" class="grid-3">
+          <!-- Rendered by app.js -->
+        </div>
+      </div>
+
+      <!-- ======================================== -->
+      <!-- 4️⃣ SCREEN 4: ORDER & PAYMENT             -->
+      <!-- ======================================== -->
+      <div id="proto-screen-4" class="proto-screen">
+        <div class="grid-2">
+          <!-- Order Summary Card (Exact numbers from prompt: Onion 200kg, ₹25/kg, Total ₹5,000, Delivery ₹300, Grand Total ₹5,300) -->
+          <div class="card order-summary-card">
+            <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--primary); margin-bottom: 14px;">
+              🛒 Order Summary (ऑर्डर सारांश)
+            </h3>
+
+            <div style="padding: 12px; background: var(--bg-main); border-radius: 10px; margin-bottom: 14px;">
+              <div style="font-size: 1.05rem; font-weight: 800;">🧅 Crop: Onion (प्याज)</div>
+              <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 2px;">
+                किसान: <strong>रामेश्वर पाटिल</strong> | स्थान: <strong>भदोही (Bhadohi)</strong>
+              </div>
+            </div>
+
+            <div class="order-bill-row">
+              <span>Quantity (मात्रा):</span>
+              <strong>200 kg</strong>
+            </div>
+            <div class="order-bill-row">
+              <span>Price (दर):</span>
+              <strong>₹25 / kg</strong>
+            </div>
+            <div class="order-bill-row">
+              <span>Total (फसल मूल्य):</span>
+              <strong>₹5,000</strong>
+            </div>
+            <div class="order-bill-row">
+              <span>Delivery (AI वाहन व मार्ग):</span>
+              <strong>₹300</strong>
+            </div>
+
+            <div class="order-bill-total">
+              <span>Grand Total (कुल देय राशि):</span>
+              <span>₹5,300</span>
+            </div>
+
+            <div style="margin-top: 18px;">
+              <button class="btn btn-primary btn-lg" style="width: 100%; font-size: 1.05rem;" onclick="openModal('upiPaymentModal')">
+                💳 [ Pay Now ] सुरक्षित एस्क्रो भुगतान करें
+              </button>
+            </div>
+
+            <div style="margin-top: 14px; font-size: 0.8rem; color: #15803D; background: #EBF7EE; padding: 10px; border-radius: 8px; text-align: center; font-weight: 700;">
+              🛡️ 100% Escrow Protection: डिलीवरी सत्यापन के बाद ही किसान को भुगतान रिलीज।
+            </div>
+          </div>
+
+          <!-- 5-Stage Order Status Stepper (Exact from prompt) -->
+          <div class="card">
+            <h3 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 16px;">
+              📦 Order Status (5-चरणीय डिलीवरी स्थिति)
+            </h3>
+
+            <div class="timeline">
+              <div class="timeline-item completed">
+                <div class="timeline-dot">✓</div>
+                <div class="timeline-content">
+                  <h5>✓ Order Placed (ऑर्डर दर्ज हुआ)</h5>
+                  <p>200 kg प्याज का ऑर्डर सफल, ₹5,300 एस्क्रो में सुरक्षित जमा</p>
+                </div>
+              </div>
+
+              <div class="timeline-item completed">
+                <div class="timeline-dot">✓</div>
+                <div class="timeline-content">
+                  <h5>✓ Farmer Confirmed (किसान द्वारा स्वीकृत)</h5>
+                  <p>रामेश्वर पाटिल (भदोही) ने ऑर्डर कन्फर्म किया व बोरियां पैक कीं</p>
+                </div>
+              </div>
+
+              <div class="timeline-item active">
+                <div class="timeline-dot">→</div>
+                <div class="timeline-content">
+                  <h5>→ Transport Assigned (AI वाहन आवंटित)</h5>
+                  <p>वाहन: Tata Ace Gold (UP-66-T-3321) | चालक: राम सिंह (+91 98390 12345)</p>
+                </div>
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-dot">○</div>
+                <div class="timeline-content">
+                  <h5>○ Out for Delivery (डिलीवरी के लिए रवाना)</h5>
+                  <p>NH-19 ग्रीन कॉरिडोर: भदोही ➔ गोपीगंज ➔ हंडिया ➔ प्रयागराज</p>
+                </div>
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-dot">○</div>
+                <div class="timeline-content">
+                  <h5>○ Delivered (सत्यापित डिलीवरी व भुगतान रिलीज)</h5>
+                  <p>प्रयागराज वेयरहाउस आगमन पर ₹5,000 किसान बैंक खाते में जमा</p>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap;">
+              <button class="btn btn-primary" style="flex:1;" onclick="advanceOrderStatus('FD-8924')">
+                ⏩ अगला चरण सिमुलेट करें (Next Stage)
+              </button>
+              <button class="btn btn-outline" style="flex:1;" onclick="switchViewMode('portal'); switchTab('tab-logistics');">
+                🗺️ लाइव रूट मैप देखें
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================================== -->
+      <!-- 5️⃣ SCREEN 5: ADMIN / AI DASHBOARD        -->
+      <!-- ======================================== -->
+      <div id="proto-screen-5" class="proto-screen">
+        <div class="card" style="margin-bottom: 20px;">
+          <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--primary);">
+            👨‍💼 ADMIN DASHBOARD (प्रशासक व AI एनालिटिक्स)
+          </h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 2px;">
+            प्लैटफ़ॉर्म निगरानी, AI मांग पूर्वानुमान, स्मार्ट रूट लॉजिस्टिक्स व विवाद निवारण
+          </p>
+        </div>
+
+        <!-- Top Metrics Grid (Exact matching prompt: Farmers 1,250 | Buyers 840 | Active Orders 326 | Completed 2,450) -->
+        <div class="grid-4" style="margin-bottom: 24px;">
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap kpi-icon-green">👨‍🌾</div>
+            <div>
+              <div class="kpi-num" id="adminFarmersCount">1,250</div>
+              <div class="kpi-title">Farmers (पंजीकृत किसान)</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap kpi-icon-blue">🏪</div>
+            <div>
+              <div class="kpi-num" id="adminBuyersCount">840</div>
+              <div class="kpi-title">Buyers (सत्यापित खरीदार)</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap kpi-icon-orange">⏳</div>
+            <div>
+              <div class="kpi-num" id="adminActiveOrders">326</div>
+              <div class="kpi-title">Active Orders (सक्रिय ऑर्डर्स)</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap kpi-icon-purple">✅</div>
+            <div>
+              <div class="kpi-num" id="adminCompletedOrders">2,450</div>
+              <div class="kpi-title">Completed (पूर्ण डिलीवरी)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <!-- AI DEMAND FORECAST Section (Exact matching prompt: Onion ↑18% HIGH, Potato Stable, Tomato ↑12%) -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">🤖 AI DEMAND FORECAST (मांग पूर्वानुमान)</h3>
+              <select class="form-select" style="width: auto; padding: 4px 8px; font-size: 0.8rem;" onchange="changeForecastCrop(this.value)">
+                <option value="onion">🧅 Onion (प्याज)</option>
+                <option value="potato">🥔 Potato (आलू)</option>
+                <option value="tomato">🍅 Tomato (टमाटर)</option>
+                <option value="wheat">🌾 Wheat (गेहूं)</option>
+              </select>
+            </div>
+
+            <!-- 3 Summary Highlight Cards from prompt -->
+            <div class="grid-3" style="margin-bottom: 14px; text-align: center;">
+              <div style="padding: 10px; background: #FFFBEB; border-radius: 8px; border: 1px solid #FCD34D;">
+                <div style="font-weight: 800; font-size: 1rem;">🧅 Onion (प्याज)</div>
+                <div style="font-size: 0.85rem; font-weight: 800; color: #EA580C; margin-top: 2px;">Demand: ↑ 18%</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted);">Next 7 Days: <span class="badge" style="background:#DCFCE7; color:#166534; padding:2px 4px; border-radius:4px; font-weight:700;">HIGH</span></div>
+              </div>
+              <div style="padding: 10px; background: #F8FAFC; border-radius: 8px; border: 1px solid var(--border-color);">
+                <div style="font-weight: 800; font-size: 1rem;">🥔 Potato (आलू)</div>
+                <div style="font-size: 0.85rem; font-weight: 800; color: var(--primary); margin-top: 2px;">Demand: → Stable</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted);">Next 7 Days: BALANCED</div>
+              </div>
+              <div style="padding: 10px; background: #FEF2F2; border-radius: 8px; border: 1px solid #FECACA;">
+                <div style="font-weight: 800; font-size: 1rem;">🍅 Tomato (टमाटर)</div>
+                <div style="font-size: 0.85rem; font-weight: 800; color: #DC2626; margin-top: 2px;">Demand: ↑ 12%</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted);">Next 7 Days: MODERATE</div>
+              </div>
+            </div>
+
+            <div style="height: 230px; position: relative;">
+              <canvas id="aiForecastCanvas"></canvas>
+            </div>
+
+            <div style="margin-top: 12px; padding: 10px; background: var(--bg-main); border-radius: 8px; font-size: 0.82rem; color: var(--text-muted);">
+              <span id="aiAdvisoryText">“AI अलर्ट: प्रमुख मंडियों में कम आवक के कारण प्याज की मांग 18% तक बढ़ सकती है।”</span>
+            </div>
+          </div>
+
+          <!-- AI ROUTE OPTIMIZATION Section (Exact matching prompt: Active 86 | Optimized 72 | Savings ₹24,500) -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">🛣️ AI ROUTE OPTIMIZATION (रूट व लॉजिस्टिक्स)</h3>
+              <button class="btn btn-outline btn-sm" onclick="switchViewMode('portal'); switchTab('tab-logistics');">
+                मैप देखें ➔
+              </button>
+            </div>
+
+            <!-- 3 Route KPIs from prompt -->
+            <div class="grid-3" style="margin-bottom: 16px; text-align: center;">
+              <div style="padding: 12px; background: var(--bg-main); border-radius: 10px;">
+                <div class="kpi-num" id="adminActiveDeliveries" style="font-size: 1.25rem; color: var(--primary);">86</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Active Deliveries</div>
+              </div>
+              <div style="padding: 12px; background: var(--bg-main); border-radius: 10px;">
+                <div class="kpi-num" id="adminRoutesOptimized" style="font-size: 1.25rem; color: #2563EB;">72</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Routes Optimized</div>
+              </div>
+              <div style="padding: 12px; background: #EBF7EE; border-radius: 10px; border: 1px solid var(--primary-border);">
+                <div class="kpi-num" id="adminEstimatedSavings" style="font-size: 1.25rem; color: #16A34A;">₹24,500</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); font-weight:700;">Estimated Savings</div>
+              </div>
+            </div>
+
+            <div style="height: 180px; position: relative; margin-bottom: 12px;">
+              <canvas id="fleetCostCanvas"></canvas>
+            </div>
+
+            <div style="padding: 10px 14px; background: #FFFBEB; border-radius: 8px; font-size: 0.8rem; color: #92400E;">
+              ⚡ <strong>AI चयन एल्गोरिदम:</strong> भदोही से प्रयागराज (68 km) 200 kg भार हेतु Tata Ace को न्यूनतम ₹300 दर पर मैच किया गया (पारंपरिक दर ₹480 की तुलना में ₹180 की सीधी बचत)।
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </section>
+
+  <!-- =================================================================== -->
+  <!-- VIEW 2: 🚀 1-CLICK MAIN WORKFLOW SIMULATOR                          -->
+  <!-- =================================================================== -->
+  <section id="view-workflow" class="main-view-section">
+    <main class="container">
+      <div class="card" style="text-align: center; padding: 28px 20px;">
+        <h2 style="font-size: 1.6rem; font-weight: 800; color: var(--primary); margin-bottom: 6px;">
+          🌾 Main End-to-End AgriTech Workflow (मुख्य कार्यप्रवाह)
+        </h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 700px; margin: 0 auto 20px;">
+          किसान खेत से डिजिटल लिस्टिंग, थोक खरीदार ऑर्डर, AI वाहन व रूट चयन, पिकअप, डिलीवरी और सुरक्षित एस्क्रो भुगतान रिलीज तक की संपूर्ण यात्रा।
+        </p>
+
+        <button class="btn btn-secondary btn-lg" onclick="runInteractiveWorkflow()">
+          ▶ [ Start End-to-End Simulation ] 1-क्लिक सिमुलेशन शुरू करें
+        </button>
+      </div>
+
+      <!-- 7 Visual Pipeline Step Boxes -->
+      <div class="workflow-stepper">
+        <div class="flow-step-box active" data-step="1">
+          <div class="flow-icon">👨‍🌾</div>
+          <div class="flow-title">1. Farmer</div>
+          <div class="flow-sub">रामेश्वर पाटिल (भदोही)</div>
+        </div>
+        <div class="flow-step-box" data-step="2">
+          <div class="flow-icon">📝</div>
+          <div class="flow-title">2. Crop Listing</div>
+          <div class="flow-sub">Onion 500kg @ ₹25</div>
+        </div>
+        <div class="flow-step-box" data-step="3">
+          <div class="flow-icon">🏪</div>
+          <div class="flow-title">3. Digital Mandi</div>
+          <div class="flow-sub">Nearby Buyer Discovery</div>
+        </div>
+        <div class="flow-step-box" data-step="4">
+          <div class="flow-icon">🛒</div>
+          <div class="flow-title">4. Buyer Orders</div>
+          <div class="flow-sub">Sunil orders 200 kg</div>
+        </div>
+        <div class="flow-step-box" data-step="5">
+          <div class="flow-icon">🤖</div>
+          <div class="flow-title">5. AI Route & Fleet</div>
+          <div class="flow-sub">Tata Ace (₹300)</div>
+        </div>
+        <div class="flow-step-box" data-step="6">
+          <div class="flow-icon">🚚</div>
+          <div class="flow-title">6. Pickup & Transit</div>
+          <div class="flow-sub">NH-19 Green Corridor</div>
+        </div>
+        <div class="flow-step-box" data-step="7">
+          <div class="flow-icon">💳</div>
+          <div class="flow-title">7. Payment Released</div>
+          <div class="flow-sub">₹5,000 to Farmer Bank</div>
+        </div>
+      </div>
+
+      <!-- Live Simulation Status Console -->
+      <div id="workflowSimLog" style="margin-top: 20px;">
+        <div style="padding: 16px; background: white; border: 1px solid var(--border-color); border-radius: 12px; font-size: 0.9rem; text-align: center; color: var(--text-muted);">
+          ऊपर दिए गए <strong>"Start End-to-End Simulation"</strong> बटन पर क्लिक करके 7-चरणीय लाइव सिमुलेशन देखें।
+        </div>
+      </div>
+
+      <!-- Workflow Example Specification Card -->
+      <div class="card" style="margin-top: 24px; border-left: 4px solid var(--primary);">
+        <h4 style="font-weight: 800; font-size: 1.1rem; color: var(--primary); margin-bottom: 8px;">
+          📌 Smart India Hackathon Case Study Example:
+        </h4>
+        <div style="font-size: 0.9rem; line-height: 1.8; color: var(--text-main);">
+          • <strong>किसान लिस्टिंग:</strong> प्याज (Onion) – 500 kg – ₹25/kg – भदोही (Bhadohi)<br>
+          • <strong>खरीदार ऑर्डर:</strong> प्रयागराज के खरीदार ने खोज की और 200 kg का ऑर्डर दिया।<br>
+          • <strong>सिस्टम कार्यप्रणाली:</strong> ऑर्डर कन्फर्म ➔ भार व दूरी अनुसार उपयुक्त वाहन (Tata Ace) ➔ AI रूट ऑप्टिमाइजेशन (NH-19, 68 km, ₹300) ➔ लाइव शिपमेंट ट्रैकिंग ➔ सफल डिलीवरी उपरांत एस्क्रो से किसान को ₹5,000 भुगतान रिलीज।
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <!-- =================================================================== -->
+  <!-- VIEW 3: 🌐 FULL WEB APPLICATION PORTAL (Comprehensive Hub)          -->
+  <!-- =================================================================== -->
+  <section id="view-portal" class="main-view-section">
+    
+    <!-- Portal Navigation Tabs -->
+    <div style="background: white; border-bottom: 1px solid var(--border-color); padding: 8px 24px; overflow-x: auto;">
+      <nav class="nav-links">
+        <button class="nav-tab-btn active" data-tab="tab-landing" onclick="switchTab('tab-landing')">🏠 होम (Home)</button>
+        <button class="nav-tab-btn" data-tab="tab-farmer" onclick="switchTab('tab-farmer')">👨‍🌾 किसान पोर्टल</button>
+        <button class="nav-tab-btn" data-tab="tab-marketplace" onclick="switchTab('tab-marketplace')">🏪 डिजिटल मंडी</button>
+        <button class="nav-tab-btn" data-tab="tab-logistics" onclick="switchTab('tab-logistics')">🗺️ AI रूट व मैप</button>
+        <button class="nav-tab-btn" data-tab="tab-orders" onclick="switchTab('tab-orders')">💳 ऑर्डर्स व ट्रैकिंग</button>
+        <button class="nav-tab-btn" data-tab="tab-admin" onclick="switchTab('tab-admin')">📊 एडमिन व AI फोरकास्ट</button>
+        <button class="nav-tab-btn" data-tab="tab-database" onclick="switchTab('tab-database')">🗄️ 5 डेटाबेस टेबल्स</button>
+        <button class="nav-tab-btn" data-tab="tab-complaints" onclick="switchTab('tab-complaints')">🛡️ शिकायत निवारण</button>
+      </nav>
+    </div>
+
+    <main class="container">
+
+      <!-- TAB 1: LANDING -->
+      <div id="tab-landing" class="tab-pane active">
+        <div class="hero-banner">
+          <div class="hero-tag">🏆 Smart India Hackathon (SIH) AgriTech Solution</div>
+          <h2 class="hero-title">सीधा किसान से खरीदार तक डिजिटल मंडी व AI परिवहन</h2>
+          <p class="hero-desc">
+            बिचौलियों (Middlemen) को हटाकर किसान को मिले 20% बेहतर भाव, खरीदार को ताज़ा उपज, और AI द्वारा सबसे कम-लागत व कम-दूरी का ग्रीन लॉजिस्टिक्स मार्ग।
+          </p>
+          <div class="hero-buttons">
+            <button class="btn btn-secondary btn-lg" onclick="switchTab('tab-farmer')">👨‍🌾 किसान के रूप में फसल बेचें</button>
+            <button class="btn btn-primary btn-lg" style="background: white; color: var(--primary);" onclick="switchTab('tab-marketplace')">🏪 थोक में फसल खरीदें</button>
+            <button class="btn btn-outline btn-lg" style="color: white; border-color: rgba(255,255,255,0.4);" onclick="switchTab('tab-logistics')">🗺️ AI रूट मैप देखें</button>
+          </div>
+        </div>
+
+        <div class="grid-4" style="margin-bottom: 24px;">
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap kpi-icon-green">₹</div>
+            <div>
+              <div class="kpi-num">₹2.45 Cr</div>
+              <div class="kpi-title">सकल व्यापार (GMV)</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap kpi-icon-orange">👨‍🌾</div>
+            <div>
+              <div class="kpi-num">1,250</div>
+              <div class="kpi-title">पंजीकृत किसान (Farmers)</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap kpi-icon-blue">🏪</div>
+            <div>
+              <div class="kpi-num">840</div>
+              <div class="kpi-title">थोक खरीदार (Buyers)</div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon-wrap kpi-icon-purple">🌱</div>
+            <div>
+              <div class="kpi-num">₹24,500</div>
+              <div class="kpi-title">AI लॉजिस्टिक्स बचत</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card" style="border-left: 4px solid #EF4444;">
+            <h4 style="color: #B91C1C; font-weight: 800; margin-bottom: 8px;">❌ वर्तमान मंडी व्यवस्था की समस्याएं:</h4>
+            <ul style="padding-left: 18px; font-size: 0.88rem; color: var(--text-muted); line-height: 1.8;">
+              <li>3 से 5 बिचौलियों के कारण किसान को केवल 30–35% उपभोक्ता मूल्य मिलता है।</li>
+              <li>परिवहन के अभाव में 20%+ फल व सब्जियां रास्ते में नष्ट हो जाती हैं।</li>
+              <li>व्यापारियों द्वारा भुगतान में 30 से 60 दिनों का लंबा विलंब।</li>
+              <li>मांग का पूर्वानुमान न होने से किसानों को मजबूरी में औने-पौने दाम में बेचना पड़ता है।</li>
+            </ul>
+          </div>
+          <div class="card" style="border-left: 4px solid #16A34A;">
+            <h4 style="color: #15803D; font-weight: 800; margin-bottom: 8px;">✅ FarmDirect का AI समाधान:</h4>
+            <ul style="padding-left: 18px; font-size: 0.88rem; color: var(--text-main); line-height: 1.8;">
+              <li>सीधा डिजिटल सौदा: किसान को 15-20% अधिक मूल्य, खरीदार को 10% सस्ती उपज।</li>
+              <li>AI रूट व क्षमता मैचिंग से ₹300 जैसे न्यूनतम किराए में 68 km तक सीधी डिलीवरी।</li>
+              <li>डिजिटल एस्क्रो गारंटी: डिलीवरी सत्यापन पर सीधे बैंक खाते में भुगतान।</li>
+              <li>AI मांग पूर्वानुमान: पिछले डेटा व मौसम के आधार पर 7-दिवसीय सटीक सलाह।</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: FARMER PORTAL -->
+      <div id="tab-farmer" class="tab-pane">
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--primary);">👨‍🌾 किसान पोर्टल (Farmer Dashboard)</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">फसल लिस्टिंग, फोटो अपलोड, आए हुए ऑर्डर्स एवं बैंक भुगतान</p>
+            </div>
+            <button class="btn btn-primary" onclick="openModal('addCropModal')">+ नई फसल जोड़ें (Add Crop)</button>
+          </div>
+        </div>
+        <div id="farmerListingsContainer"></div>
+      </div>
+
+      <!-- TAB 3: MARKETPLACE -->
+      <div id="tab-marketplace" class="tab-pane">
+        <div class="card" style="margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <h3 style="font-size: 1.25rem; font-weight: 800;">🌾 डिजिटल फसल मंडी (Digital Marketplace)</h3>
+            <input type="text" class="form-input" style="max-width: 320px;" placeholder="🔍 फसल खोजें..." oninput="handleSearchInput(event)">
+          </div>
+        </div>
+        <div id="marketplaceGrid" class="grid-3"></div>
+      </div>
+
+      <!-- TAB 4: LOGISTICS & LEAFLET MAP -->
+      <div id="tab-logistics" class="tab-pane">
+        <div class="card" style="margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--primary);">
+                🗺️ OpenStreetMap AI लॉजिस्टिक्स व लाइव रूट ऑप्टिमाइज़र
+              </h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">
+                किसान खेत से खरीदार वेयरहाउस तक सबसे कम दूरी, न्यूनतम लागत और कम कार्बन उत्सर्जन वाला मार्ग।
+              </p>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-outline btn-sm" onclick="window.updateMapRoute('bhadohi')">भदोही ➔ प्रयागराज (68 km)</button>
+              <button class="btn btn-outline btn-sm" onclick="window.updateMapRoute('nashik')">लासलगांव ➔ मुंबई (182 km)</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="map-container"></div>
+
+        <div class="grid-2" style="margin-top: 20px;">
+          <div class="card">
+            <h4 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 12px;">🛣️ सक्रिय रूट मेट्रिक्स</h4>
+            <div class="grid-4" style="text-align: center; margin-bottom: 14px;">
+              <div style="padding: 10px; background: var(--bg-main); border-radius: 8px;">
+                <div id="mapRouteDistance" style="font-weight: 800; font-size: 1.2rem; color: var(--primary);">68 km</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted);">कुल दूरी</div>
+              </div>
+              <div style="padding: 10px; background: var(--bg-main); border-radius: 8px;">
+                <div id="mapRouteTransit" style="font-weight: 800; font-size: 1.2rem; color: var(--primary);">1.8 घंटे</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted);">ट्रांजिट समय</div>
+              </div>
+              <div style="padding: 10px; background: var(--bg-main); border-radius: 8px;">
+                <div id="mapRouteCost" style="font-weight: 800; font-size: 1.2rem; color: #15803D;">₹300</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted);">AI डिलीवरी किराया</div>
+              </div>
+              <div style="padding: 10px; background: var(--bg-main); border-radius: 8px;">
+                <div id="mapRouteCo2" style="font-weight: 800; font-size: 1.2rem; color: #16A34A;">6.2 kg</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted);">CO₂ बचत</div>
+              </div>
+            </div>
+            <div id="mapRouteDesc" style="font-size: 0.85rem; line-height: 1.6; color: var(--text-main);">
+              <strong>भदोही ➔ प्रयागराज ग्रीन कॉरिडोर (NH-19)</strong><br>
+              📍 भदोही फार्म गेट ➔ गोपीगंज मंडी टोल ➔ हंडिया बाईपास ➔ शास्त्री ब्रिज ➔ प्रयागराज वेयरहाउस।
+            </div>
+          </div>
+
+          <div class="card">
+            <h4 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 12px;">🚚 AI अनुशंसित वाहन बेड़ा (Matched Fleet)</h4>
+            <div style="padding: 14px; background: #EBF7EE; border-radius: 12px; display: flex; align-items: center; gap: 14px; border: 1.5px solid var(--primary-border);">
+              <span style="font-size: 2.2rem;">🚛</span>
+              <div style="flex: 1;">
+                <div style="font-weight: 800; font-size: 1.05rem;">Tata Ace Gold ('छोटा हाथी')</div>
+                <div style="font-size: 0.82rem; color: var(--text-muted);">क्षमता: 1,500 kg | लोड: 200 kg | चालक: राम सिंह</div>
+              </div>
+              <div style="font-size: 1.3rem; font-weight: 800; color: var(--primary);">₹300</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 5: ORDERS -->
+      <div id="tab-orders" class="tab-pane">
+        <div class="card" style="margin-bottom: 20px;">
+          <h3 style="font-size: 1.25rem; font-weight: 800;">💳 सक्रिय ऑर्डर्स व एस्क्रो गारंटी</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 2px;">
+            खरीदार का पैसा सुरक्षित एस्क्रो खाते में जमा रहता है और डिलीवरी सत्यापन के बाद ही किसान को जारी किया जाता है।
+          </p>
+        </div>
+        <div id="ordersListContainer"></div>
+      </div>
+
+      <!-- TAB 6: ADMIN -->
+      <div id="tab-admin" class="tab-pane">
+        <div class="card" style="margin-bottom: 20px;">
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--primary);">
+            📊 एडमिन एनालिटिक्स व AI मांग पूर्वानुमान
+          </h3>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <h4 style="font-weight: 800; margin-bottom: 12px;">7-दिवसीय मूल्य व मांग वक्र</h4>
+            <div style="height: 240px; position: relative;">
+              <canvas id="portalForecastCanvas"></canvas>
+            </div>
+          </div>
+          <div class="card">
+            <h4 style="font-weight: 800; margin-bottom: 12px;">लॉजिस्टिक्स बचत तुलना</h4>
+            <div style="height: 240px; position: relative;">
+              <canvas id="portalFleetCanvas"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 7: 5 DATABASE TABLES -->
+      <div id="tab-database" class="tab-pane">
+        <div class="card" style="margin-bottom: 20px;">
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--primary);">
+            🗄️ 5 Main Database Tables (SIH डेटाबेस स्कीमा)
+          </h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">
+            PostgreSQL / SQLite लाइव टेबल्स: Users, Products, Orders, Transport, Complaints
+          </p>
+        </div>
+        <div id="databaseViewerContainer"></div>
+      </div>
+
+      <!-- TAB 8: COMPLAINTS REDRESSAL -->
+      <div id="tab-complaints" class="tab-pane">
+        <div class="card" style="margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--primary);">
+                🛡️ विवाद निवारण व शिकायत पोर्टल (Complaints & Disputes)
+              </h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">
+                गुणवत्ता विसंगति, वजन अंतर या परिवहन विलंब का त्वरित डिजिटल समाधान
+              </p>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="openModal('complaintModal')">+ नई शिकायत दर्ज करें</button>
+          </div>
+        </div>
+        <div id="complaintsListContainer"></div>
+      </div>
+
+    </main>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 4. MODALS & DIALOGS                        -->
+  <!-- ========================================== -->
+
+  <!-- Modal A: Add Crop Modal with Photo Upload & Presets -->
+  <div id="addCropModal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">🌾 नई फसल जोड़ें (Add Crop)</h3>
+        <button class="modal-close-btn" onclick="closeModal('addCropModal')">&times;</button>
+      </div>
+      <form onsubmit="handleAddCropSubmit(event)">
+        
+        <!-- Photo Upload Zone -->
+        <div class="form-group">
+          <label class="form-label">फसल की फोटो अपलोड करें (Upload Crop Photo):</label>
+          <div class="photo-upload-zone" onclick="document.getElementById('cropFileInput').click()">
+            <div style="font-size: 2rem;">📸</div>
+            <div style="font-weight: 700; font-size: 0.88rem; color: var(--primary); margin-top: 4px;">
+              फोटो अपलोड करने के लिए क्लिक करें या फ़ाइल ड्रैग करें
+            </div>
+            <input type="file" id="cropFileInput" style="display:none;" accept="image/*" onchange="handleCustomPhotoUpload(event)">
+          </div>
+
+          <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">
+            या त्वरित फोटो चुनें (Quick Presets):
+          </div>
+          <div class="preset-photos-row">
+            <div class="preset-chip" onclick="selectPhotoPreset('onion')">🧅 प्याज (Onion)</div>
+            <div class="preset-chip" onclick="selectPhotoPreset('potato')">🥔 आलू (Potato)</div>
+            <div class="preset-chip" onclick="selectPhotoPreset('tomato')">🍅 टमाटर (Tomato)</div>
+            <div class="preset-chip" onclick="selectPhotoPreset('wheat')">🌾 गेहूं (Wheat)</div>
+          </div>
+
+          <img id="cropPhotoPreview" class="preview-thumbnail" src="https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?w=600" style="display:block;">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">फसल का नाम (Crop Name):</label>
+          <input id="newCropName" type="text" class="form-input" value="भदोही देसी लाल प्याज (Red Onion)" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">श्रेणी (Category):</label>
+          <select id="newCropCategory" class="form-select">
+            <option value="vegetables">सब्जियां (Vegetables)</option>
+            <option value="grains">अनाज (Grains)</option>
+            <option value="pulses">दालें (Pulses)</option>
+          </select>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">मात्रा (Quantity kg):</label>
+            <input id="newCropQuantity" type="number" class="form-input" value="500" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">अपेक्षित भाव (Price ₹/kg):</label>
+            <input id="newCropPrice" type="number" class="form-input" value="25" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">खेत / मंडी स्थान (Farm / Location Details):</label>
+          <input id="newCropLocation" type="text" class="form-input" value="भदोही (Bhadohi) फार्म गेट">
+        </div>
+
+        <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+          <input id="newCropOrganic" type="checkbox" checked>
+          <label for="newCropOrganic" style="font-size: 0.85rem; font-weight: 700;">🌿 100% जैविक प्रमाणित उपज (Organic Certified)</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+          मार्केटप्लेस में प्रकाशित करें ➔
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal B: Buy Now & Order Calculator -->
+  <div id="buyNowModal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">🛒 फसल ऑर्डर व चेकआउट</h3>
+        <button class="modal-close-btn" onclick="closeModal('buyNowModal')">&times;</button>
+      </div>
+      <div>
+        <div style="margin-bottom: 14px; padding: 12px; background: var(--bg-main); border-radius: 10px;">
+          <h4 id="buyModalCropTitle" style="font-size: 1.15rem; font-weight: 800;">Onion (प्याज) - Bhadohi</h4>
+          <div style="font-size: 0.85rem; color: var(--text-muted);">किसान: <span id="buyModalFarmer">रामेश्वर पाटिल</span></div>
+          <div id="buyModalBasePrice" style="font-size: 1rem; font-weight: 800; color: var(--primary); margin-top: 2px;">₹25 / kg</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">खरीदने हेतु आवश्यक मात्रा (Quantity kg):</label>
+          <input id="buyQuantityInput" type="number" class="form-input" value="200" min="10" oninput="updateBuyPriceCalculation()">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">डिलीवरी वेयरहाउस का पता:</label>
+          <input id="buyDeliveryAddress" type="text" class="form-input" value="सिविल लाइंस, प्रयागराज वेयरहाउस">
+        </div>
+
+        <!-- Bill Breakdown (Exact prompt matching: ₹5,000 + ₹300 = ₹5,300) -->
+        <div style="background: var(--bg-main); padding: 14px; border-radius: 10px; margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.9rem;">
+            <span>फसल राशि:</span>
+            <strong id="buyCropSubtotal">₹5,000</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.9rem;">
+            <span>AI ट्रांसपोर्ट किराया (Tata Ace 68km):</span>
+            <strong id="buyTransportFee">₹300</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; color: #16A34A;">
+            <span>एस्क्रो सुरक्षा शुल्क:</span>
+            <strong>₹0 (मुफ़्त)</strong>
+          </div>
+          <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 8px 0;">
+          <div style="display: flex; justify-content: space-between; font-size: 1.15rem; font-weight: 800;">
+            <span>कुल देय राशि (Grand Total):</span>
+            <span id="buyGrandTotal" style="color: var(--primary);">₹5,300</span>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" style="width: 100%;" onclick="executeOrderAndPay()">
+          सुरक्षित एस्क्रो UPI भुगतान की ओर बढ़ें ➔
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal C: UPI / Escrow Payment Modal -->
+  <div id="upiPaymentModal" class="modal-backdrop">
+    <div class="modal-card" style="text-align: center;">
+      <div class="modal-header">
+        <h3 class="modal-title" style="text-align: center; width: 100%;">🛡️ सुरक्षित एस्क्रो UPI भुगतान</h3>
+        <button class="modal-close-btn" onclick="closeModal('upiPaymentModal')">&times;</button>
+      </div>
+      <div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+          BHIM / GPay / PhonePe / Paytm / Razorpay से QR स्कैन करें
+        </p>
+
+        <!-- QR Code Simulation -->
+        <div style="width: 160px; height: 160px; margin: 0 auto 16px; background: white; border: 2.5px solid var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 5rem; box-shadow: var(--shadow-sm);">
+          🏁
+        </div>
+
+        <div style="background: #EBF7EE; padding: 10px; border-radius: 8px; font-size: 0.85rem; color: #166534; font-weight: 700; margin-bottom: 16px;">
+          UPI VPA: farmdirect.escrow@icici
+        </div>
+
+        <button class="btn btn-primary" style="width: 100%; font-size: 1rem;" onclick="finalizePayment()">
+          ✅ ₹5,300 भुगतान सत्यापित करें (Simulate Payment)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal D: File Complaint Modal -->
+  <div id="complaintModal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">⚠️ विवाद / शिकायत दर्ज करें (File Complaint)</h3>
+        <button class="modal-close-btn" onclick="closeModal('complaintModal')">&times;</button>
+      </div>
+      <form onsubmit="submitComplaint(event)">
+        <div class="form-group">
+          <label class="form-label">ऑर्डर आईडी (Order ID):</label>
+          <input type="text" id="complaintOrderId" class="form-input" value="FD-8924" readonly>
+        </div>
+        <div class="form-group">
+          <label class="form-label">शिकायत का विवरण (Complaint Details):</label>
+          <textarea id="complaintText" class="form-input" rows="4" placeholder="फसल गुणवत्ता, वजन में अंतर या डिलीवरी में विलंब का विवरण लिखें..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">
+          शिकायत प्रेषित करें ➔
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 5. FOOTER                                  -->
+  <!-- ========================================== -->
+  <footer>
+    <div class="footer-grid">
+      <div>
+        <h4 style="color: white; font-weight: 800; font-size: 1.1rem; margin-bottom: 8px;">🌾 FarmDirect</h4>
+        <p style="font-size: 0.82rem; line-height: 1.6;">
+          Smart India Hackathon (SIH) AgriTech डिजिटल मंच। किसान, थोक व्यापारी व AI परिवहन को एक मंच पर जोड़कर कृषि आय में वृद्धि।
+        </p>
+      </div>
+      <div>
+        <h5 style="color: white; font-weight: 700; margin-bottom: 8px;">मुख्य तकनीकें (Tech Stack)</h5>
+        <ul style="list-style: none; font-size: 0.82rem; line-height: 2;">
+          <li>• Frontend: Flutter App + Responsive Web Showcase</li>
+          <li>• Backend: Node.js Express + Python FastAPI AI</li>
+          <li>• Database: PostgreSQL / SQLite (5 Core Tables)</li>
+          <li>• Maps: OpenStreetMap + Leaflet.js AI Routing</li>
+        </ul>
+      </div>
+      <div>
+        <h5 style="color: white; font-weight: 700; margin-bottom: 8px;">सुरक्षा व प्रमाणन</h5>
+        <ul style="list-style: none; font-size: 0.82rem; line-height: 2;">
+          <li>• डिजिटल एस्क्रो भुगतान सुरक्षा (Escrow)</li>
+          <li>• 100% आधार व खतौनी 7/12 सत्यापित किसान</li>
+          <li>• ग्रीन लॉजिस्टिक्स CO₂ बचत ट्रैकिंग</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      SIH AgriTech Platform © 2024–2026 FarmDirect. Built for Indian Agriculture 🇮🇳.
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/ai-charts.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
